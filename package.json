@@ -1,0 +1,23 @@
+{
+  "name": "@fp-aws/sdk",
+  "version": "0.1.0",
+  "description": "Function wrappers around the aws-sdk using fp-ts.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fp-aws/sdk.git"
+  },
+  "author": "Gary McLean Hall <gary@adaptivecode.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fp-aws/sdk/issues"
+  },
+  "homepage": "https://github.com/fp-aws/sdk#readme",
+  "peerDependencies": {
+    "aws-sdk": "^2.839.0",
+    "fp-ts": "^2.9.5"
+  }
+}
