@@ -1,7 +1,7 @@
 {
   "name": "@fp-aws/sdk",
   "version": "0.1.0",
-  "description": "Function wrappers around the aws-sdk using fp-ts.",
+  "description": "Functional wrappers around the aws-sdk using fp-ts.",
   "main": "index.js",
   "scripts": {
     "test": "jest"
