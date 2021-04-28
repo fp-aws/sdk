@@ -13,21 +13,23 @@ Uses `aws-sdk` and `fp-ts` as peer dependencies, so you'll have to install those
 ## Usage
 
 ```typescript
-import { s3 } from '@fp-aws/sdk'
+import fpAws from '@fp-aws/sdk'
+import { S3 } from 'aws-sdk'
 import { identity } from 'fp-ts/lib/function'
 import { fold } from 'fp-ts/lib/Either'
 
 const getFileFromBucket = async (): Promise<string> => {
-  const objectGetter = s3.getObject({
+  const getObject = fpAws((s3: S3) => s3.getObject)
+  const objectGetter = getObject({
     Bucket: 'some_bucket_name',
     Key: 'test.txt',
   })
 
-  const program = objectGetter({
+  const program = objectGetter(new S3({
     Region: 'eu-west-1',
     AccessKeyId: 'abcdef...',
     SecretAccessKey: 'xxx...',
-  })
+  }))
 
   const output = await program()
 
@@ -37,14 +39,3 @@ const getFileFromBucket = async (): Promise<string> => {
   )
 }
 ```
-
-## Done
-
-_Nothing done yet, still early days._
-
-## Todo
-
-- S3
-- DynamoDB
-- SNS
-- SQS

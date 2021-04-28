@@ -1,29 +1,33 @@
-// import { S3, SNS, DynamoDB } from 'aws-sdk'
-// import functionalize from '@/index'
+import * as AWSMock from "aws-sdk-mock"
+import AWS from 'aws-sdk'
+import fpAws from '../../index'
+import { right } from "fp-ts/lib/Either"
 
-// const s3 = {
-//   createBucket: functionalize((s3: S3) => s3.createBucket),
-//   getObject: functionalize((s3: S3) => s3.getObject),
-//   putObject: functionalize((s3: S3) => s3.putObject),
-// }
+const putObjectMock = jest.fn()
 
-// const dynamoDbX = functionalize((dynamo: DynamoDB) => dynamo.createTable)
+AWSMock.setSDKInstance(AWS)
+AWSMock.mock('S3', 'putObject', (params: AWS.S3.PutObjectRequest, callback: Function) => {
+  putObjectMock(params)
+  callback(null, params)
+})
 
-// const s3PutObject = functionalize((s3: S3) => s3.putObject)
-// s3PutObject({
-//   Bucket: 'A',
-//   Key: 'B',
-// })
-
-// const snsPublish = functionalize((sns: SNS) => sns.publish)
-// snsPublish({
-//   Message: 'Hello world!',
-// })
+const s3 = {
+  putObject: fpAws((s3: AWS.S3) => s3.putObject)
+}
 
 describe('S3', () => {
   describe('putObject', () => {
     it('should succeed with response', async () => {
-      expect(true).toBe(true)
+      const putObjectRequest: AWS.S3.PutObjectRequest = {
+        Bucket: 'bucket',
+        Key: 'key'
+      }
+      const putObject = s3.putObject(putObjectRequest)
+      expect(
+        await putObject(new AWS.S3())()
+      ).toMatchObject(right(putObjectRequest))
+      expect(putObjectMock)
+        .toHaveBeenCalledWith(putObjectRequest)
     })
   })
 })

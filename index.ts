@@ -1,5 +1,6 @@
 import { Service, AWSError } from 'aws-sdk'
 import { Request } from 'aws-sdk/lib/request'
+import { pipe } from 'fp-ts/lib/function'
 import { taskify, TaskEither } from 'fp-ts/lib/TaskEither'
 
 export interface AwsSdkFunction<AWSRequest, AWSOutput> {
@@ -18,15 +19,11 @@ export interface AwsSdkFunction<AWSRequest, AWSOutput> {
  * @example
  * 
     const s3 = {
-      createBucket: functionalize((s3: S3) => s3.createBucket),
-      getObject: functionalize((s3: S3) => s3.getObject),
-      putObject: functionalize((s3: S3) => s3.putObject),
+      createBucket: fpAws((s3: S3) => s3.createBucket),
+      getObject: fpAws((s3: S3) => s3.getObject),
+      putObject: fpAws((s3: S3) => s3.putObject),
     }
-
-    const dynamoDbX = functionalize((dynamo: DynamoDB) => dynamo.createTable)
-
-    const s3PutObject = functionalize((s3: S3) => s3.putObject)
-    s3PutObject({
+    s3.putObject({
       Bucket: 'A',
       Key: 'B',
     })
@@ -36,14 +33,13 @@ export interface AwsSdkFunction<AWSRequest, AWSOutput> {
       Message: 'Hello world!',
     }) 
  */
-export const functionalize = <AWSService extends Service, Request, AWSOutput>(
+export const fpAws = <AWSService extends Service, Request, AWSOutput>(
   functionSelector: (service: AWSService) => AwsSdkFunction<Request, AWSOutput>
-) => (request: Request) => (
-  service: AWSService
-): TaskEither<AWSError, AWSOutput> => {
-  const sdkFunction = functionSelector(service)
-  const taskified = taskify<Request, AWSError, AWSOutput>(sdkFunction)
-  return taskified(request)
-}
+) => (request: Request) => (service: AWSService): TaskEither<AWSError, AWSOutput> => 
+  pipe(
+    service,
+    functionSelector,
+    _ => taskify<Request, AWSError, AWSOutput>(_)
+  )(request)
 
-export default functionalize
+export default fpAws
