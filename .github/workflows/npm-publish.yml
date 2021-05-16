@@ -12,22 +12,40 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
       - run: npm ci
-      - run: npm test
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Test
+        run: npm test
+      - name: Clean Package File
+        run: npx clear-package-json package.json -o package.json
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: dist
+          path: |
+            package.json
+            dist/
+            LICENSE
+            readme.md
 
   publish-npm:
     needs: build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - name: Download Build Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: dist
+      - uses: actions/setup-node@v2
         with:
           node-version: 12
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{secrets.npm_token}}

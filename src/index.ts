@@ -28,18 +28,21 @@ export interface AwsSdkFunction<AWSRequest, AWSOutput> {
       Key: 'B',
     })
 
-    const snsPublish = functionalize((sns: SNS) => sns.publish)
+    const snsPublish = fpAws((sns: SNS) => sns.publish)
     snsPublish({
       Message: 'Hello world!',
     }) 
  */
-export const fpAws = <AWSService extends Service, Request, AWSOutput>(
-  functionSelector: (service: AWSService) => AwsSdkFunction<Request, AWSOutput>
-) => (request: Request) => (service: AWSService): TaskEither<AWSError, AWSOutput> => 
-  pipe(
-    service,
-    functionSelector,
-    _ => taskify<Request, AWSError, AWSOutput>(_)
-  )(request)
+export const fpAws =
+  <AWSService extends Service, Request, AWSOutput>(
+    functionSelector: (
+      service: AWSService
+    ) => AwsSdkFunction<Request, AWSOutput>
+  ) =>
+  (request: Request) =>
+  (service: AWSService): TaskEither<AWSError, AWSOutput> =>
+    pipe(service, functionSelector, (_) =>
+      taskify<Request, AWSError, AWSOutput>(_)
+    )(request)
 
 export default fpAws

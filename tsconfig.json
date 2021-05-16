@@ -1,45 +1,15 @@
 {
   "compilerOptions": {
     "target": "es6",
+    "declaration": true,
     "module": "commonjs",
     "strict": true,
-    "jsx": "preserve",
-    "importHelpers": true,
     "outDir": "./dist",
     "resolveJsonModule": true,
-    "moduleResolution": "node",
     "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "baseUrl": ".",
-    "types": [
-      "node",
-      "jest"
-    ],
-    "paths": {
-      "@/*": [
-        "*"
-      ],
-      "@tests/*": [
-        "tests/*"
-      ]
-    },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
+    "sourceMap": true
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "tests/**/*.ts",
-    "tests/**/*.tsx"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist",
-    "cli"
+    "./src"
   ]
 }
